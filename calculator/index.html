@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pre-order Price Calculator</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: practical shop tool, calm and quick to read on a phone
+   IDEA: a parcel's shipping label — the quote is the label stuck on the box
+   PICTURE: the kraft-paper label with the customer's total printed large
+   COLOUR and TYPE: white ground, kraft brown label, black ink, one red for the total; Archivo throughout
+   LAYOUT: inputs left, label right; stacked on phones with a sticky total bar */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#15130f);--ink:light-dark(#141210,#f3eee6);--mute:light-dark(#5d564c,#b8ae9f);
+--line:light-dark(#e3ddd2,#3a342b);--field:light-dark(#f7f4ee,#1f1c16);
+--kraft:light-dark(#d9b682,#4a3a26);--kraft2:light-dark(#c39a5f,#6a5236);--red:light-dark(#b80f2a,#ff7a7a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3.5vw,48px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+h1{font-size:clamp(30px,4.4vw,46px);line-height:1.05;margin:0 0 8px;font-weight:800;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:20px;margin:0 0 12px;font-weight:700}
+.sub{color:var(--mute);margin:0;max-width:62ch}
+.top{padding-bottom:8px}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start;padding-top:20px}
+.lbl{display:block;font-size:13px;color:var(--mute);margin-bottom:4px;font-weight:500}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:8px;padding:9px 11px;min-height:44px;width:100%}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--kraft2);outline-offset:2px}
+input[type=number]{font-variant-numeric:tabular-nums;text-align:right}
+button{font:inherit;font-weight:600;min-height:44px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:0 16px;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px;padding:0;border:0}
+.seg label{position:relative}
+.seg input{position:absolute;opacity:0;inset:0;margin:0;min-height:0;cursor:pointer}
+.seg span{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;font-weight:600;cursor:pointer}
+.seg input:checked+span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg input:focus-visible+span{outline:3px solid var(--kraft2);outline-offset:2px}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.6fr) minmax(0,.75fr) minmax(0,1.9fr) auto;gap:10px;align-items:end;margin-top:10px}
+.row2{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,2fr) auto;gap:10px;align-items:end;margin-top:10px}
+.dup{padding:0 12px;background:transparent;color:var(--ink);border-color:var(--line);font-size:14px;white-space:nowrap}
+.tpl{border:1px dashed var(--line);border-radius:12px;padding:14px;margin-top:20px}
+.tpl textarea{min-height:150px;font-size:15px;margin-top:6px}
+.x{padding:0;width:44px;background:transparent;color:var(--mute);border-color:var(--line);font-size:20px;line-height:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.note{font-size:13px;color:var(--mute);margin:8px 0 0}
+.label{position:sticky;top:16px;background:var(--kraft);color:light-dark(#1d160c,#f6ead8);border-radius:10px;padding:22px;box-shadow:0 1px 0 var(--kraft2),0 18px 40px -24px rgba(60,40,10,.55)}
+.label::before{content:"";display:block;height:34px;margin-bottom:16px;background:repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px,currentColor 5px 6px,transparent 6px 9px,currentColor 9px 12px,transparent 12px 14px);opacity:.75}
+.in{border:1.5px dashed color-mix(in srgb,currentColor 45%,transparent);border-radius:6px;padding:16px}
+.big{font-size:clamp(40px,6vw,60px);font-weight:800;line-height:1;color:var(--red);font-variant-numeric:tabular-nums;white-space:nowrap;margin:4px 0 14px}
+.label .lbl{color:inherit;opacity:.8}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.split b{display:block;font-size:22px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.eta{font-size:14px;margin:6px 0 0}
+.bd{list-style:none;margin:16px 0 0;padding:0;font-size:15px}
+.bd li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid color-mix(in srgb,currentColor 22%,transparent)}
+.bd li span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.bd li.me{font-weight:700}
+.msg{margin-top:18px}
+.msg textarea{min-height:200px;resize:vertical;background:light-dark(#fffaf1,#2a2219);border-color:color-mix(in srgb,currentColor 30%,transparent);color:inherit;font-size:15px}
+.msg .actions{margin-top:10px;align-items:center}
+.label button{background:light-dark(#1d160c,#f6ead8);color:light-dark(#f6ead8,#1d160c);border-color:transparent}
+.ok{font-size:14px;font-weight:600}
+details.set{border-top:1px solid var(--line)}
+summary{cursor:pointer;font-weight:700;font-size:20px;min-height:44px;display:flex;align-items:center}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px 16px;margin:12px 0 24px}
+.warn{background:var(--field);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;margin:12px 0}
+.bar{display:none}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}.label{position:static}
+.bar{display:flex;position:fixed;left:0;right:0;bottom:0;justify-content:space-between;align-items:center;gap:12px;padding:10px max(5vw,16px);background:var(--ink);color:var(--bg);z-index:5}
+.bar b{font-size:22px;white-space:nowrap;font-variant-numeric:tabular-nums}.bar button{background:var(--bg);color:var(--ink);white-space:nowrap}
+body{padding-bottom:72px}}
+@media(max-width:560px){.row2{grid-template-columns:1fr 1fr}.row2 .nt{grid-column:1/-1}.row2 .dup{grid-column:2;justify-self:end}.row{grid-template-columns:repeat(3,minmax(0,1fr))}.row .cat{grid-column:1/3}.row .x{grid-column:3;justify-self:end}.two{grid-template-columns:1fr}}
+body.locked>*:not(#lock){display:none!important}
+#lock{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--bg);z-index:20;padding:24px}
+body.locked #lock{display:flex}
+#lock form{width:100%;max-width:320px;text-align:center}
+#lock input{text-align:center;font-size:24px;letter-spacing:.3em;margin:14px 0}
+#lock button{width:100%}
+@media(prefers-reduced-motion:no-preference){.big{transition:color .2s}.flash{animation:f .35s ease}@keyframes f{from{transform:scale(.97)}to{transform:none}}}
+</style>
+</head>
+<body class="locked">
+<div id="lock"><form id="lockForm"><h1 style="font-size:28px">Enter PIN</h1><p class="sub">Vango Shop calculator</p><input id="pin" type="password" inputmode="numeric" autocomplete="current-password" aria-label="PIN"><button type="submit">Open</button><p class="note" id="pinMsg" role="status"></p></form></div>
+<header class="band top"><div class="wrap">
+<h1>Pre-order price calculator</h1>
+<p class="sub">Enter the price from the website and you get the full MVR price for the customer: item, shipping, customs, GST, your profit and delivery, plus a message to send them.</p>
+</div></header>
+
+<main class="band grid wrap">
+<section aria-label="Order details">
+  <div style="margin-bottom:18px"><label class="lbl" for="cust">Customer name (optional)</label><input id="cust" placeholder="Shown in the quote message"></div>
+  <fieldset class="seg" id="origin"><legend class="lbl" style="width:100%">Where is it from?</legend></fieldset>
+  <div id="items"></div>
+  <div class="actions"><button type="button" id="add">+ Add item</button><button type="button" class="ghost" id="clear">Clear items</button></div>
+  <p class="note" id="sample">The two items loaded on first open are examples. Replace them with your customer's link.</p>
+  <div class="two">
+    <div><label class="lbl" for="ship" id="shipl">Website's own shipping fee</label><input type="number" id="ship" min="0" step="any" inputmode="decimal"></div>
+    <div><label class="lbl" for="del">Delivery in Maldives</label><select id="del"></select></div>
+  </div>
+  <div class="tpl">
+    <h2 style="margin-bottom:4px">Order form for customers</h2>
+    <p class="note" style="margin:0">Send this when someone wants to order, or put it in your auto-reply, so every list comes back with sizes and colours.</p>
+    <textarea id="tplText" aria-label="Order form text"></textarea>
+    <div class="actions" style="margin-top:10px;align-items:center"><button type="button" id="tplCopy">Copy order form</button><span class="ok" id="tplOk" role="status"></span></div>
+  </div>
+</section>
+
+<aside class="label" id="result" aria-live="polite">
+  <div class="in">
+    <span class="lbl">Customer pays</span>
+    <div class="big" id="total">MVR 0</div>
+    <div class="split">
+      <div><span class="lbl" id="advl">Advance (50%)</span><b id="adv">MVR 0</b></div>
+      <div><span class="lbl">Balance on delivery</span><b id="bal">MVR 0</b></div>
+    </div>
+    <p class="eta" id="eta"></p>
+    <ul class="bd" id="bd"></ul>
+  </div>
+  <div class="msg">
+    <label class="lbl" for="out">Message for the customer</label>
+    <textarea id="out"></textarea>
+    <div class="actions"><button type="button" id="copy">Copy message</button><span class="ok" id="ok" role="status"></span></div>
+  </div>
+</aside>
+</main>
+
+<section class="band wrap" style="padding-top:0">
+<details class="set" id="setbox">
+<summary>Settings: exchange rates, shipping, customs, profit</summary>
+<div class="warn"><b>Check these before you quote real customers.</b> Every price is worked out from your dollar rate, so put in the rate you really pay for dollars each day. It is never shown to customers. Rupee, ringgit, dirham and Pakistani rupee rates are market rates from 24 Nov 2026, so update them now and then. Your settings stay in this browser only, so set them once on each phone or computer you use. The per-kg shipping is a placeholder: put in your forwarder's real rate. The duty rates are rough estimates, so confirm them with Maldives Customs or a clearing agent. Your settings are saved in this browser only.</div>
+<div id="settings"></div>
+<div class="actions"><button type="button" class="ghost" id="reset">Reset settings to default</button></div>
+</details>
+</section>
+
+<div class="bar"><span>Customer pays <b id="btotal">MVR 0</b></span><button type="button" id="go">See quote</button></div>
+
+<script>
+{
+const ORIG=[['INR','India','₹'],['MYR','Malaysia','RM'],['AED','Dubai','AED'],['PKR','Pakistan','Rs'],['USD','Shein / Temu (USD)','$']];
+const CATS=[['cloth','Clothes & shoes'],['beauty','Beauty & skincare'],['elec','Phones & gadgets'],['watch','Watches'],['jewel','Jewellery'],['other','Other']];
+const DELS=[['pick','Pickup in Malé'],['male','Malé / Hulhumalé delivery'],['small','Ferry, small parcel'],['big','Ferry, big parcel']];
+const D={shop:'Vango Shop',usd:'',per:{INR:94.5,MYR:4.07,AED:3.6725,PKR:281.5},kg:{INR:13,MYR:16,AED:14,PKR:16,USD:0},
+eta:{INR:'10–15 days',MYR:'15–25 days',AED:'7–14 days',PKR:'15–25 days',USD:'10–20 days'},
+duty:{cloth:15,beauty:0,elec:5,watch:5,jewel:25,other:15},gst:8,margin:15,minp:75,buf:3,adv:50,round:5,
+del:{pick:0,male:30,small:40,big:70}};
+const SAMPLE=[{name:'Myntra kurta set',price:1899,qty:1,kg:0.6,cat:'cloth',size:'M',color:'Maroon',note:''},{name:'Nykaa matte lipstick',price:599,qty:2,kg:0.1,cat:'beauty',size:'',color:'Shade 05',note:''}];
+const BLANK=()=>({name:'',price:'',qty:1,kg:0.5,cat:'cloth',size:'',color:'',note:''});
+const TPL=`Assalaamu alaikum! To order, please send each item like this:\n\n1. Link (or screenshot)\n   Size:\n   Colour:\n   Quantity:\n   Anything else (e.g. sleeve length, model):\n\n2. Link (or screenshot)\n   Size:\n   Colour:\n   Quantity:\n\nAlso tell us your name, island and phone number. We'll send you one full price in MVR.`;
+const K='preorder-calc-v2';
+const clone=o=>JSON.parse(JSON.stringify(o));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id);
+let st={s:clone(D),o:'INR',items:clone(SAMPLE),ship:0,del:'small',fresh:true};
+try{const j=JSON.parse(localStorage.getItem(K)||'null');if(j){const s=j.s||{};
+st={s:{...clone(D),...s,per:{...D.per,...s.per},kg:{...D.kg,...s.kg},eta:{...D.eta,...s.eta},duty:{...D.duty,...s.duty},del:{...D.del,...s.del}},
+o:ORIG.some(x=>x[0]===j.o)?j.o:'INR',items:Array.isArray(j.items)?j.items:clone(SAMPLE),ship:j.ship||0,cust:j.cust||'',del:DELS.some(x=>x[0]===j.del)?j.del:'small',fresh:false}}}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify({s:st.s,o:st.o,items:st.items,ship:st.ship,del:st.del,cust:st.cust}))}catch(e){}};
+const n=v=>{const x=parseFloat(v);return isFinite(x)?x:0};
+const mvr=v=>'MVR '+Math.round(v).toLocaleString('en-US');
+const sym=()=>ORIG.find(x=>x[0]===st.o)[2];
+
+function drawOrigin(){
+  $('origin').innerHTML='<legend class="lbl" style="width:100%">Where is it from?</legend>'+ORIG.map(([c,l])=>
+  `<label><input type="radio" name="o" value="${c}" ${c===st.o?'checked':''}><span>${esc(l)}</span></label>`).join('');
+}
+function drawItems(){
+  const c=sym();
+  $('items').innerHTML=st.items.map((it,i)=>`<div class="item">
+  <label class="lbl" for="nm${i}">Item ${i+1}: name or link</label>
+  <input id="nm${i}" data-i="${i}" data-k="name" value="${esc(it.name)}" placeholder="Paste the product link or name">
+  <div class="row">
+   <div><label class="lbl" for="pr${i}">Price (${esc(c)})</label><input id="pr${i}" type="number" min="0" step="any" inputmode="decimal" data-i="${i}" data-k="price" value="${esc(it.price)}"></div>
+   <div><label class="lbl" for="qt${i}">Qty</label><input id="qt${i}" type="number" min="1" step="1" inputmode="numeric" data-i="${i}" data-k="qty" value="${esc(it.qty)}"></div>
+   <div><label class="lbl" for="kg${i}">Weight kg</label><input id="kg${i}" type="number" min="0" step="any" inputmode="decimal" data-i="${i}" data-k="kg" value="${esc(it.kg)}"></div>
+   <div class="cat"><label class="lbl" for="ct${i}">Type (for customs)</label><select id="ct${i}" data-i="${i}" data-k="cat">${CATS.map(([k,l])=>`<option value="${k}" ${k===it.cat?'selected':''}>${esc(l)}</option>`).join('')}</select></div>
+   <button type="button" class="x" data-rm="${i}" aria-label="Remove item ${i+1}">×</button>
+  </div>
+  <div class="row2">
+   <div><label class="lbl" for="sz${i}">Size</label><input id="sz${i}" data-i="${i}" data-k="size" value="${esc(it.size)}" placeholder="M, 38, 6–7Y"></div>
+   <div><label class="lbl" for="cl${i}">Colour</label><input id="cl${i}" data-i="${i}" data-k="color" value="${esc(it.color)}" placeholder="Black"></div>
+   <div class="nt"><label class="lbl" for="no${i}">Notes</label><input id="no${i}" data-i="${i}" data-k="note" value="${esc(it.note)}" placeholder="Other choice, e.g. full sleeve"></div>
+   <button type="button" class="dup" data-dup="${i}" aria-label="Duplicate item ${i+1}">Duplicate</button>
+  </div></div>`).join('')||'<p class="note">No items yet. Tap “Add item”.</p>';
+  $('shipl').textContent=`Website's own shipping fee (${c}, whole order)`;
+}
+function drawDel(){
+  $('del').innerHTML=DELS.map(([k,l])=>`<option value="${k}" ${k===st.del?'selected':''}>${esc(l)}: ${esc(mvr(st.s.del[k]))}</option>`).join('');
+}
+const SET=[
+ ['Your shop',[['shop','Shop name in message','t']]],
+ ['Dollar rate (update this every day)',[['usd','MVR you pay for 1 USD (the rate you really get)']]],
+ ['Other currencies (how many for 1 USD)',ORIG.filter(x=>x[0]!=='USD').map(([c,l])=>['per.'+c,`${c} (${l}) for 1 USD`])],
+ ['Forwarder shipping to Malé (USD per kg)',ORIG.map(([c,l])=>['kg.'+c,l])],
+ ['Delivery time shown to customer',ORIG.map(([c,l])=>['eta.'+c,l,'t'])],
+ ['Customs duty % (estimates, please confirm)',CATS.map(([k,l])=>['duty.'+k,l])],
+ ['Tax, profit and payment',[['gst','GST %'],['margin','Your profit %'],['minp','Minimum profit per order (MVR)'],['buf','Exchange-rate buffer %'],['adv','Advance %'],['round','Round total up to nearest (MVR)']]],
+ ['Delivery fees (MVR)',DELS.map(([k,l])=>['del.'+k,l])]
+];
+const get=p=>p.split('.').reduce((o,k)=>o[k],st.s);
+const put=(p,v)=>{const ks=p.split('.');const last=ks.pop();ks.reduce((o,k)=>o[k],st.s)[last]=v};
+function drawSettings(){
+  $('settings').innerHTML=SET.map(([h,fs])=>`<h2>${esc(h)}</h2><div class="sgrid">${fs.map(([p,l,t])=>{const id='s_'+p.replace('.','_');
+  return `<div><label class="lbl" for="${id}">${esc(l)}</label><input id="${id}" data-p="${p}" ${t?'':'type="number" step="any" min="0" inputmode="decimal"'} value="${esc(get(p))}"></div>`}).join('')}</div>`).join('');
+}
+function calc(){
+  const s=st.s,u=n(s.usd),r=st.o==='USD'?u:(n(s.per[st.o])>0?u/n(s.per[st.o]):0);
+  const vals=st.items.map(it=>n(it.price)*n(it.qty)*r);
+  const cost=vals.reduce((a,b)=>a+b,0);
+  const kg=st.items.reduce((a,it)=>a+n(it.kg)*n(it.qty),0);
+  const freight=kg*n(s.kg[st.o])*u,site=n(st.ship)*r,extra=freight+site;
+  const duty=st.items.reduce((a,it,i)=>a+(vals[i]+(cost?extra*vals[i]/cost:0))*n(s.duty[it.cat])/100,0);
+  const gst=(cost+extra+duty)*n(s.gst)/100;
+  const buf=(cost+site)*n(s.buf)/100;
+  const landed=cost+extra+duty+gst+buf;
+  const profit=cost>0?Math.max(landed*n(s.margin)/100,n(s.minp)):0;
+  const dl=cost>0?n(s.del[st.del]):0;
+  const step=n(s.round)>0?n(s.round):1;
+  const total=cost>0?Math.ceil((landed+profit+dl)/step)*step:0;
+  const adv=Math.min(total,Math.ceil(total*n(s.adv)/100/step)*step);
+  return {cost,freight,site,duty,gst,buf,profit,dl,total,adv,bal:total-adv,kg,extraRound:total-(landed+profit+dl)};
+}
+function out(flash){
+  const c=calc(),s=st.s,dn=DELS.find(x=>x[0]===st.del)[1];
+  if(!(n(s.usd)>0)){$('total').textContent='Set rate';$('btotal').textContent='Set rate';$('adv').textContent='–';$('bal').textContent='–';$('eta').textContent='First open Settings below and enter the dollar rate you pay today.';$('bd').innerHTML='';$('out').value='';const sb=$('setbox');if(sb)sb.open=true;save();return}
+  $('total').textContent=mvr(c.total);$('btotal').textContent=mvr(c.total);
+  $('adv').textContent=mvr(c.adv);$('bal').textContent=mvr(c.bal);$('advl').textContent=`Advance (${n(s.adv)}%)`;
+  $('eta').textContent=`Arrives in about ${s.eta[st.o]} after you order. Priced at MVR ${n(s.usd).toFixed(2)} per dollar`+(st.o==='USD'?'.':` (1 ${st.o} = MVR ${(n(s.per[st.o])>0?n(s.usd)/n(s.per[st.o]):0).toFixed(st.o==='MYR'||st.o==='AED'?2:4)}).`);
+  const rows=[['Items',c.cost],['Website shipping',c.site],[`Forwarder shipping (${c.kg.toFixed(2)} kg)`,c.freight],['Customs duty',c.duty],[`GST ${n(s.gst)}%`,c.gst],[`Rate buffer ${n(s.buf)}%`,c.buf],[dn,c.dl],['Rounding',c.extraRound]];
+  $('bd').innerHTML=rows.filter(r=>Math.round(r[1])!==0).map(r=>`<li><span>${esc(r[0])}</span><span>${esc(mvr(r[1]))}</span></li>`).join('')+
+   `<li class="me"><span>Your profit (don't share)</span><span>${esc(mvr(c.profit+c.extraRound))}</span></li>`;
+  const lines=st.items.filter(it=>n(it.price)>0).map((it,k)=>{const v=[it.size&&'Size '+String(it.size).trim(),it.color&&'Colour '+String(it.color).trim(),String(it.note||'').trim()].filter(Boolean).join(', ');return (k+1)+'. '+(String(it.name||'').trim()||'Item')+(v?' ('+v+')':'')+(n(it.qty)>1?' ×'+n(it.qty):'')});
+  const nm=String(st.cust||'').trim();
+  $('out').value=c.total?`Assalaamu alaikum${nm?' '+nm:''}! Here's your quote from ${s.shop}:\n\n${lines.join('\n')}\n\nTotal: ${mvr(c.total)} (includes international shipping, customs and ${dn.toLowerCase()})\nAdvance to place the order (${n(s.adv)}%): ${mvr(c.adv)}\nBalance before delivery: ${mvr(c.bal)}\n\nEstimated arrival: about ${s.eta[st.o]} after we order.\nPlease check every size and colour above, then reply OK to confirm. This price is valid today only, and the advance can't be refunded once we've ordered.`:'Add an item price to make a quote.';
+  if(flash){const t=$('total');t.classList.remove('flash');void t.offsetWidth;t.classList.add('flash')}
+  save();
+}
+$('origin').addEventListener('change',e=>{if(e.target.name==='o'){st.o=e.target.value;drawItems();out(true)}});
+$('items').addEventListener('input',e=>{const t=e.target,i=t.dataset.i;if(i===undefined)return;st.items[i][t.dataset.k]=t.dataset.k==='name'||t.dataset.k==='cat'?t.value:t.value;out()});
+$('items').addEventListener('change',e=>{const t=e.target;if(t.dataset.k==='cat'){st.items[t.dataset.i].cat=t.value;out(true)}});
+$('items').addEventListener('click',e=>{const d=e.target.closest('[data-dup]');if(d){const i=+d.dataset.dup;st.items.splice(i+1,0,{...st.items[i],size:'',color:''});drawItems();out(true);const f=$('sz'+(i+1));if(f)f.focus();return}const b=e.target.closest('[data-rm]');if(!b)return;st.items.splice(+b.dataset.rm,1);drawItems();out(true)});
+$('cust').addEventListener('input',e=>{st.cust=e.target.value;out()});
+$('tplCopy').addEventListener('click',async()=>{const ta=$('tplText');let ok=false;try{await navigator.clipboard.writeText(ta.value);ok=true}catch(e){ta.focus();ta.select();try{ok=document.execCommand('copy')}catch(x){}}$('tplOk').textContent=ok?'Copied':'Selected. Press copy on your keyboard or phone.';setTimeout(()=>$('tplOk').textContent='',2500)});
+$('add').addEventListener('click',()=>{st.items.push(BLANK());drawItems();out();const f=$('nm'+(st.items.length-1));if(f)f.focus()});
+$('clear').addEventListener('click',()=>{st.items=[BLANK()];st.ship=0;st.cust='';$('cust').value='';$('ship').value=0;$('sample').hidden=true;drawItems();out(true)});
+$('ship').addEventListener('input',e=>{st.ship=e.target.value;out()});
+$('del').addEventListener('change',e=>{st.del=e.target.value;out(true)});
+$('settings').addEventListener('input',e=>{const p=e.target.dataset.p;if(!p)return;const txt=p==='shop'||p.startsWith('eta.');put(p,txt?e.target.value:n(e.target.value));drawDel();out()});
+$('reset').addEventListener('click',()=>{st.s=clone(D);drawSettings();drawDel();out(true)});
+$('copy').addEventListener('click',async()=>{const ta=$('out');try{await navigator.clipboard.writeText(ta.value);$('ok').textContent='Copied'}catch(e){ta.focus();ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(x){}$('ok').textContent=ok?'Copied':'Selected. Press copy on your keyboard or phone.'}setTimeout(()=>$('ok').textContent='',2500)});
+$('go').addEventListener('click',()=>$('result').scrollIntoView({behavior:'smooth',block:'start'}));
+$('sample').hidden=!st.fresh;
+$('ship').value=st.ship;$('cust').value=st.cust||'';$('tplText').value=TPL;
+drawOrigin();drawItems();drawDel();drawSettings();out();
+}
+</script>
+<script>
+{
+const SALT='vango-calc-87e2d7d3a4580099',HASH='9e51be515d9a195ead39b2ba97213b9c0bd0dd55096abd3a20d95b00ce0b5485',KEY='vango-calc-unlock';
+const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const open=()=>document.body.classList.remove('locked');
+try{if(localStorage.getItem(KEY)===HASH)open()}catch(e){}
+document.getElementById('lockForm').addEventListener('submit',async e=>{
+  e.preventDefault();const p=document.getElementById('pin');
+  const h=hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(SALT+p.value.trim())));
+  if(h===HASH){try{localStorage.setItem(KEY,HASH)}catch(x){}open()}else{document.getElementById('pinMsg').textContent='Wrong PIN';p.value='';p.focus()}
+});
+}
+</script>
+</body>
+</html>
