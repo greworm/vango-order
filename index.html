@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vango Shop Pre-order</title>
+<meta name="description" content="Pre-order from India, Malaysia, Dubai, Pakistan and Shein, delivered to your island in the Maldives.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--kraft:#d8b07a;--ink:#141210;--mute:#5d564c;--line:#e3ddd2;--field:#f7f4ee;--red:#c8102e;--ok:#1d7a46}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip}
+.top{background:var(--kraft);padding:22px 18px 26px}
+.wrap{max-width:620px;margin:0 auto}
+.brand{font-weight:900;font-size:22px}
+h1{font-size:30px;line-height:1.08;margin:10px 0 6px;font-weight:900;letter-spacing:-.01em}
+.top p{margin:0;font-size:16px;color:#2b241b}
+main{padding:18px 16px 120px}
+h2{font-size:20px;margin:26px 0 10px;font-weight:800}
+.lbl{display:block;font-size:14px;color:var(--mute);margin:0 0 5px;font-weight:600}
+input,textarea{font:inherit;font-size:16px;width:100%;min-height:48px;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink)}
+textarea{min-height:96px;resize:vertical}
+input:focus,textarea:focus,button:focus-visible{outline:3px solid var(--kraft);outline-offset:1px}
+button{font:inherit;font-weight:700;cursor:pointer;min-height:48px;border-radius:10px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;padding:0 16px}
+button.light{background:#fff;color:var(--ink);border-color:var(--line)}
+.item{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;background:#fff}
+.ihead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ihead b{font-size:16px}
+.rm{min-height:40px;padding:0 12px;background:#fff;color:var(--mute);border-color:var(--line);font-weight:600;font-size:14px}
+.src{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;background:var(--field);border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--mute)}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.mode button{background:#fff;color:var(--ink);border-color:var(--line);font-size:15px;padding:0 8px}
+.mode button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.opts{margin-top:14px;display:grid;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-height:44px;min-width:52px;background:#fff;color:var(--ink);border-color:var(--line);padding:0 12px;font-size:15px}
+.chips button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qty{display:flex;align-items:center;gap:10px;margin-top:12px}
+.qty button{width:48px;padding:0;font-size:22px;background:#fff;color:var(--ink);border-color:var(--line)}
+.qty output{min-width:28px;text-align:center;font-size:20px;font-weight:800}
+.qty span{color:var(--mute);font-weight:600}
+.add{width:100%;background:#fff;color:var(--ink);border-style:dashed;border-color:var(--mute)}
+.bulk{margin-top:12px;border-radius:14px;background:var(--field);padding:14px}
+.bulk summary{font-weight:700;cursor:pointer;min-height:28px}
+.bulk textarea{margin-top:10px;background:#fff}
+.bulk button{margin-top:10px}
+.deliv{display:grid;gap:8px}
+.deliv button{text-align:left;background:#fff;color:var(--ink);border-color:var(--line);font-weight:600}
+.deliv button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.field{margin-bottom:12px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+.bar button{width:100%;min-height:54px;font-size:18px;background:var(--red);border-color:var(--red)}
+.bar button:disabled{opacity:.6}
+.err{color:var(--red);font-weight:700;font-size:15px;margin:0 0 8px;text-align:center}
+.done{text-align:center;padding:40px 18px}
+.done .tick{width:72px;height:72px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.done h1{font-size:28px}
+.done .id{font-size:34px;font-weight:900;margin:8px 0}
+.note{font-size:14px;color:var(--mute);margin:6px 0 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="form">
+  <header class="top"><div class="wrap">
+    <div class="brand">Vango Shop</div>
+    <h1>Pre-order from India, Malaysia, Dubai, Pakistan &amp; Shein</h1>
+    <p>Paste your links, pick sizes, send. We'll message you one full price in MVR.</p>
+  </div></header>
+
+  <main class="wrap">
+    <h2>Your items</h2>
+    <div id="items"></div>
+    <button type="button" class="add" id="addBtn">+ Add another item</button>
+
+    <details class="bulk" id="bulk">
+      <summary>Have many links? Paste them all at once</summary>
+      <textarea id="bulkText" placeholder="Paste all your links here, in any order"></textarea>
+      <button type="button" id="bulkBtn">Add these links</button>
+      <p class="note" id="bulkNote"></p>
+    </details>
+
+    <h2>Your details</h2>
+    <div class="field"><label class="lbl" for="name">Name</label><input id="name" autocomplete="name"></div>
+    <div class="two">
+      <div class="field"><label class="lbl" for="phone">Phone / Viber</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel"></div>
+      <div class="field"><label class="lbl" for="island">Island</label><input id="island" list="islands" autocomplete="address-level2"></div>
+    </div>
+    <datalist id="islands"><option value="Malé"><option value="Hulhumalé"><option value="Villimalé"><option value="Addu City"><option value="Fuvahmulah"><option value="Kulhudhuffushi"><option value="Thinadhoo"><option value="Naifaru"><option value="Eydhafushi"></datalist>
+
+    <span class="lbl">Delivery</span>
+    <div class="deliv" id="deliv">
+      <button type="button" data-d="Pickup in Malé" aria-pressed="false">Pickup in Malé</button>
+      <button type="button" data-d="Malé / Hulhumalé" aria-pressed="false">Deliver in Malé or Hulhumalé</button>
+      <button type="button" data-d="Ferry to island" aria-pressed="false">Send by ferry to my island</button>
+    </div>
+
+    <input id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    <div class="field" style="margin-top:14px"><label class="lbl" for="notes">Anything else? (optional)</label><input id="notes" placeholder="e.g. need it before Eid"></div>
+    <p class="note">We'll check prices and send your quote on Viber or Messenger. Nothing to pay yet.</p>
+  </main>
+
+  <div class="bar"><div class="wrap">
+    <p class="err" id="err" hidden></p>
+    <button type="button" id="send">Send order request</button>
+  </div></div>
+</div>
+
+<div id="done" class="done" hidden>
+  <div class="tick"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div>
+  <h1>Order request sent!</h1>
+  <div class="id" id="doneId"></div>
+  <p id="doneText">We'll message you with one full price in MVR soon.</p>
+  <button type="button" id="again" class="light" style="margin-top:18px">Start a new order</button>
+</div>
+
+<script>
+(function(){
+var ENDPOINT='https://script.google.com/macros/s/AKfycbwt1tWpN0O8xgTjE1cDDvixMItg9gG5YEJ9RD_BV5Ggx1BFULjRMD6zDB76G36Cdd67jw/exec';
+var SIZES=['XS','S','M','L','XL','XXL','3XL','Free size'];
+var items=[];var delivery='';
+var $=function(id){return document.getElementById(id)};
+function blank(link){return {link:link||'',mode:'link',size:'',other:'',color:'',note:'',qty:1}}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function source(link){
+  var l=String(link||'').toLowerCase();if(!l)return '';
+  var map=[['myntra','Myntra','India'],['nykaa','Nykaa','India'],['flipkart','Flipkart','India'],['amazon.in','Amazon India','India'],['amzn.in','Amazon India','India'],['meesho','Meesho','India'],['ajio','Ajio','India'],['tatacliq','Tata CLiQ','India'],
+   ['shopee','Shopee','Malaysia'],['lazada','Lazada','Malaysia'],['zalora','Zalora','Malaysia'],
+   ['noon.com','Noon','Dubai'],['amazon.ae','Amazon UAE','Dubai'],['namshi','Namshi','Dubai'],['sharafdg','Sharaf DG','Dubai'],
+   ['khaadi','Khaadi','Pakistan'],['sapphire','Sapphire','Pakistan'],['gulahmed','Gul Ahmed','Pakistan'],['daraz.pk','Daraz','Pakistan'],['.pk','Pakistan site','Pakistan'],
+   ['shein','Shein','Shein']];
+  for(var i=0;i<map.length;i++){if(l.indexOf(map[i][0])>-1)return {site:map[i][1],from:map[i][2]}}
+  return {site:'',from:'Other'};
+}
+function draw(){
+  $('items').innerHTML=items.map(function(it,i){
+    var s=source(it.link);
+    var sizeChips=SIZES.map(function(z){return '<button type="button" data-i="'+i+'" data-size="'+esc(z)+'" aria-pressed="'+(it.size===z)+'">'+esc(z)+'</button>'}).join('');
+    return '<div class="item">'+
+      '<div class="ihead"><b>Item '+(i+1)+'</b>'+(items.length>1?'<button type="button" class="rm" data-rm="'+i+'">Remove</button>':'')+'</div>'+
+      '<label class="lbl" for="l'+i+'">Product link</label>'+
+      '<input id="l'+i+'" data-i="'+i+'" data-k="link" value="'+esc(it.link)+'" placeholder="Paste the link here" inputmode="url" autocomplete="off">'+
+      (s&&s.site?'<span class="src">'+esc(s.site)+' · '+esc(s.from)+'</span>':'')+
+      '<div class="mode"><button type="button" data-i="'+i+'" data-mode="link" aria-pressed="'+(it.mode==='link')+'">Just the link</button>'+
+      '<button type="button" data-i="'+i+'" data-mode="opts" aria-pressed="'+(it.mode==='opts')+'">Choose size / colour</button></div>'+
+      (it.mode==='opts'?'<div class="opts">'+
+        '<div><span class="lbl">Size</span><div class="chips">'+sizeChips+'</div></div>'+
+        '<div class="two"><div><label class="lbl" for="o'+i+'">Other size</label><input id="o'+i+'" data-i="'+i+'" data-k="other" value="'+esc(it.other)+'" placeholder="38, 6–7Y"></div>'+
+        '<div><label class="lbl" for="c'+i+'">Colour</label><input id="c'+i+'" data-i="'+i+'" data-k="color" value="'+esc(it.color)+'" placeholder="Black"></div></div>'+
+        '<div><label class="lbl" for="n'+i+'">Other choice (optional)</label><input id="n'+i+'" data-i="'+i+'" data-k="note" value="'+esc(it.note)+'" placeholder="e.g. full sleeve, iPhone 15"></div>'+
+      '</div>':'')+
+      '<div class="qty"><span>Qty</span><button type="button" data-i="'+i+'" data-q="-1" aria-label="Less">−</button><output>'+it.qty+'</output><button type="button" data-i="'+i+'" data-q="1" aria-label="More">+</button></div>'+
+    '</div>';
+  }).join('');
+  var n=items.filter(function(it){return it.link.trim()}).length;
+  $('send').textContent=n?'Send order request ('+n+' item'+(n>1?'s':'')+')':'Send order request';
+  save();
+}
+function save(){try{localStorage.setItem('vango-order',JSON.stringify({items:items,delivery:delivery}));localStorage.setItem('vango-me',JSON.stringify({name:$('name').value,phone:$('phone').value,island:$('island').value}))}catch(e){}}
+function load(){
+  try{var me=JSON.parse(localStorage.getItem('vango-me')||'null');if(me){$('name').value=me.name||'';$('phone').value=me.phone||'';$('island').value=me.island||''}}catch(e){}
+  try{var d=JSON.parse(localStorage.getItem('vango-order')||'null');if(d&&Array.isArray(d.items)&&d.items.length){items=d.items;delivery=d.delivery||''}}catch(e){}
+  if(!items.length)items=[blank()];
+  markDeliv();
+}
+function markDeliv(){[].forEach.call($('deliv').querySelectorAll('button'),function(b){b.setAttribute('aria-pressed',String(b.dataset.d===delivery))})}
+
+$('items').addEventListener('input',function(e){var t=e.target,i=t.dataset.i;if(i==null||!t.dataset.k)return;items[i][t.dataset.k]=t.value;if(t.dataset.k==='other'&&t.value)items[i].size='';
+  if(t.dataset.k==='link'){var s=source(t.value);var card=t.parentNode;var chip=card.querySelector('.src');if(s&&s.site){if(!chip){chip=document.createElement('span');chip.className='src';t.insertAdjacentElement('afterend',chip)}chip.textContent=s.site+' · '+s.from}else if(chip){chip.remove()}
+    var n=items.filter(function(it){return it.link.trim()}).length;$('send').textContent=n?'Send order request ('+n+' item'+(n>1?'s':'')+')':'Send order request'}
+  save()});
+$('items').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;var i=+b.dataset.i;
+  if(b.dataset.rm!=null){items.splice(+b.dataset.rm,1);if(!items.length)items=[blank()];draw();return}
+  if(b.dataset.mode){items[i].mode=b.dataset.mode;draw();return}
+  if(b.dataset.size){items[i].size=items[i].size===b.dataset.size?'':b.dataset.size;if(items[i].size)items[i].other='';draw();return}
+  if(b.dataset.q){items[i].qty=Math.max(1,Math.min(99,items[i].qty+(+b.dataset.q)));draw();return}
+});
+$('addBtn').addEventListener('click',function(){var last=items[items.length-1];items.push(blank());if(last&&last.mode==='opts')items[items.length-1].mode='opts';draw();var f=$('l'+(items.length-1));if(f)f.focus()});
+$('bulkBtn').addEventListener('click',function(){
+  var links=($('bulkText').value.match(/https?:\/\/[^\s<>"']+/g)||[]);
+  if(!links.length){$('bulkNote').textContent='No links found. Make sure each one starts with http.';return}
+  items=items.filter(function(it){return it.link.trim()});
+  links.forEach(function(l){items.push(blank(l))});
+  $('bulkText').value='';$('bulkNote').textContent='Added '+links.length+' link'+(links.length>1?'s':'')+'. Tap "Choose size / colour" on any item that needs it.';
+  draw();
+});
+$('deliv').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;delivery=b.dataset.d;markDeliv();save()});
+['name','phone','island'].forEach(function(id){$(id).addEventListener('input',save)});
+
+$('send').addEventListener('click',function(){
+  var err=$('err');err.hidden=true;
+  var list=items.filter(function(it){return it.link.trim()}).map(function(it){
+    var s=source(it.link);var opts=it.mode==='opts';
+    return {link:it.link.trim(),size:opts?(it.other.trim()||it.size):'',color:opts?it.color.trim():'',note:opts?it.note.trim():'',qty:it.qty,from:s?s.from:''};
+  });
+  var msg='';
+  if(!list.length)msg='Please paste at least one link.';
+  else if(!$('name').value.trim())msg='Please add your name.';
+  else if(!$('phone').value.trim())msg='Please add your phone or Viber number.';
+  else if(!$('island').value.trim())msg='Please add your island.';
+  else if(!delivery)msg='Please choose how you want it delivered.';
+  if(msg){err.textContent=msg;err.hidden=false;return}
+  var btn=$('send');btn.disabled=true;btn.textContent='Sending…';
+  var payload={website:$('website').value,name:$('name').value,phone:$('phone').value,island:$('island').value,delivery:delivery,notes:$('notes').value,items:list};
+  fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+    .then(function(res){return res.json()})
+    .then(function(r){
+      btn.disabled=false;
+      if(!r||!r.ok){draw();err.textContent=(r&&r.error)||'Something went wrong. Please try again.';err.hidden=false;return}
+      items=[blank()];delivery='';$('notes').value='';save();
+      $('doneId').textContent=r.id;$('doneText').textContent='We got your '+r.count+' item'+(r.count>1?'s':'')+'. We\u2019ll message you with one full price in MVR soon.';
+      $('form').hidden=true;$('done').hidden=false;window.scrollTo(0,0);
+    })
+    .catch(function(){btn.disabled=false;draw();err.textContent='Could not send. Check your internet and try again.';err.hidden=false});
+});
+$('again').addEventListener('click',function(){$('done').hidden=true;$('form').hidden=false;markDeliv();draw()});
+load();draw();
+})();
+</script>
+</body>
+</html>
